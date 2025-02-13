@@ -1,4 +1,5 @@
 --Query for MYSQL
+--This is a function that is called by a store procedure to register an user or to check if the user and password are valid
 DROP FUNCTION IF EXISTS hashedPassword;
 DELIMITER //
 CREATE FUNCTION hashedPassword(passwordtext VARCHAR(100), salt VARCHAR(50))

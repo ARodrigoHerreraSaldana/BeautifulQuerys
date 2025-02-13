@@ -14,7 +14,7 @@ BEGIN
 
     IF in_first_name IS NULL OR in_last_name IS NULL OR in_occupation IS NULL THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Your first name, last name or occupation cannot be null';
+        SET MESSAGE_TEXT = 'Your first name, last name or occupation can not be null';
     END IF;
 
     IF EXISTS (SELECT 1 FROM users WHERE email = in_email) THEN
