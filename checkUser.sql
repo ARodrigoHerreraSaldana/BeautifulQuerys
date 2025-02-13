@@ -20,10 +20,7 @@ BEGIN
   SELECT salt, hashPassword
   INTO virtual_salt, virtual_password
   FROM users
-  WHERE email = email_to_validate;
-  SET @SPECIALERROR = concat ('svirtual_salt ', virtual_salt, ' virtual_password ', virtual_password , ' hashed ' , hashedpassword(virtual_salt, password_to_validate));
-  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @SPECIALERROR;
-  
+  WHERE email = email_to_validate;  
   IF virtual_password = hashedpassword(password_to_validate, virtual_salt) THEN
     SET result = 1; 
   ELSE
