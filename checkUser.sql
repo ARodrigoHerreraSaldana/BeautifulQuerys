@@ -1,31 +1,34 @@
-DROP FUNCTION IF EXISTS CHECKUSER;
+DROP FUNCTION IF EXISTS checkuser;
 DELIMITER //
 
-CREATE FUNCTION CHECKUSER(EMAIL_TO_VALIDATE VARCHAR(50), PASSWORD_TO_VALIDATE TEXT)
+CREATE FUNCTION checkuser(email_to_validate VARCHAR(50), password_to_validate TEXT)
 RETURNS TINYINT
 BEGIN
-  DECLARE RESULT TINYINT;
-  DECLARE VIRTUALPASSWORD VARCHAR(128);
-  DECLARE VIRTUALSALT TEXT;
+  DECLARE result TINYINT;
+  DECLARE virtual_password VARCHAR(128);
+  DECLARE virtual_salt TEXT;
 
-  IF EMAIL_TO_VALIDATE IS NULL OR PASSWORD_TO_VALIDATE IS NULL THEN
+  IF email_to_validate IS NULL OR password_to_validate IS NULL THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'EMAIL OR PASSWORD CANNOT BE NULL';
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM USERS WHERE EMAIL = EMAIL_TO_VALIDATE) THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = CONCAT('NO USER FOUND WITH THE EMAIL : ', EMAIL_TO_VALIDATE);
+ IF NOT EXISTS (SELECT 1 FROM users WHERE email = email_to_validate) THEN
+    SET @SPECIALERROR = concat ('No user found with the email: ', email_to_validate);
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @SPECIALERROR;
   END IF;
-
-  SELECT SALT, HASH_PASSWORD
-  INTO VIRTUALSALT, VIRTUALPASSWORD
-  FROM USERS
-  WHERE EMAIL = EMAIL_TO_VALIDATE;
-
-  IF VIRTUALPASSWORD = HASHEDPASSWORD(CONCAT(VIRTUALSALT, PASSWORD_TO_VALIDATE)) THEN
-    SET RESULT = 1; -- True
+  
+  SELECT salt, hashPassword
+  INTO virtual_salt, virtual_password
+  FROM users
+  WHERE email = email_to_validate;
+  SET @SPECIALERROR = concat ('svirtual_salt ', virtual_salt, ' virtual_password ', virtual_password , ' hashed ' , hashedpassword(virtual_salt, password_to_validate));
+  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @SPECIALERROR;
+  
+  IF virtual_password = hashedpassword(password_to_validate, virtual_salt) THEN
+    SET result = 1; 
   ELSE
-    SET RESULT = 0; -- False
+    SET result = 0; 
   END IF;
 
-  RETURN RESULT;
+  RETURN result;
 END //
