@@ -13,7 +13,7 @@ BEGIN
   END IF;
 
  IF NOT EXISTS (SELECT 1 FROM users WHERE email = email_to_validate) THEN
-    SET @SPECIALERROR = concat ('No user found with the email: ', email_to_validate);
+    SET @SPECIALERROR = concat ('No user found with your email, Please register');
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @SPECIALERROR;
   END IF;
   

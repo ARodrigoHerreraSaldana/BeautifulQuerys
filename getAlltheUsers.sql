@@ -1,0 +1,1 @@
+select concat(firstName,'',lastName) as full_name, occupation, email, updatedAt, isActive  from users ;
